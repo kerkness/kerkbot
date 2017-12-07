@@ -1,0 +1,23 @@
+{
+  "name": "kerkbot",
+  "version": "1.0.0",
+  "description": "Because who doesn't have their own twitter bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kerkness/kerkbot.git"
+  },
+  "keywords": [
+    "twitter",
+    "bot"
+  ],
+  "author": "kerkness",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kerkness/kerkbot/issues"
+  },
+  "homepage": "https://github.com/kerkness/kerkbot#readme"
+}
