@@ -4,7 +4,7 @@
   "description": "Because who doesn't have their own twitter bot",
   "main": "index.js",
   "scripts": {
-    "retweet": "node index.js"
+    "retweet": "node index.js",
   },
   "repository": {
     "type": "git",
