@@ -4,7 +4,7 @@
   "description": "Because who doesn't have their own twitter bot",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "retweet": "node index.js"
   },
   "repository": {
     "type": "git",
@@ -19,5 +19,9 @@
   "bugs": {
     "url": "https://github.com/kerkness/kerkbot/issues"
   },
-  "homepage": "https://github.com/kerkness/kerkbot#readme"
+  "homepage": "https://github.com/kerkness/kerkbot#readme",
+  "dependencies": {
+    "aws-sdk": "^2.166.0",
+    "twit": "^2.2.9"
+  }
 }
