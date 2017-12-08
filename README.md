@@ -36,7 +36,7 @@ Populate the Demo with Demo Data
     
 Run some CRUD examples
 
-    node demo/add.js
+    node demo/create.js
     node demo/update.js
     node demo/read.js
     node demo/increment.js
