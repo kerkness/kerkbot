@@ -28,7 +28,7 @@ client.on("messageCreate", function (message) {
 	if (message.author.bot) return;
 
 
-	if(!message.content.toLowerCase().includes('kerk') && message.type != 19) return;
+	if(!message.content.toLowerCase().includes('kerkbot') && message.type != 19 && message.channelId != 1058561094551085067) return;
 
   if(message.type === 19 && !message.mentions.repliedUser.bot) return;
 
