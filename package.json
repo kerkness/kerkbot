@@ -11,5 +11,15 @@
 		"@cloudflare/workers-types": "^3.0.0",
 		"vitest": "^0.24.5",
 		"wrangler": "^2.1.14"
+	},
+	"dependencies": {
+		"@discordjs/voice": "^0.14.0",
+		"bufferutil": "^4.0.7",
+		"discord.js": "^14.7.1",
+		"dotenv": "^16.0.3",
+		"erlpack": "discord/erlpack",
+		"openai": "^3.1.0",
+		"utf-8-validate": "^5.0.10",
+		"zlib-sync": "^0.1.7"
 	}
 }
