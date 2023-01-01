@@ -1,9 +1,12 @@
 // require('dotenv').config();
 import 'dotenv/config'
 import { Client, GatewayIntentBits, Message } from 'discord.js';
+import { Configuration, OpenAIApi, CreateCompletionResponse } from 'openai';
+import { AxiosResponse } from 'axios';
+import { get } from 'lodash';
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
-const { Configuration, OpenAIApi } = require("openai");
+// const { Configuration, OpenAIApi } = require("openai");
 const configuration = new Configuration({
 	apiKey: process.env.OPENAI_API_KEY,
 });
@@ -56,7 +59,8 @@ client.on("messageCreate", function (message: Message) {
 
 	prompt += `You: ${message.content}\n`;
 	(async () => {
-		const gptResponse = await openai.createCompletion({
+		
+		openai.createCompletion({
 			model: "text-davinci-003",
 			prompt: prompt,
 			max_tokens: 60,
@@ -65,8 +69,23 @@ client.on("messageCreate", function (message: Message) {
 			presence_penalty: 0,
 			frequency_penalty: 0.5,
 			user: message.author.username
+		}).then((gptResponse: AxiosResponse<CreateCompletionResponse, any>) => {
+
+			const choices = get(gptResponse, 'data.choices', []);
+
+			if(choices.length > 0) {
+				const response = get(choices[0], 'text', '');
+				message.reply(`${response.substring(7)}`);
+				prompt += `${gptResponse.data.choices[0].text}\n`;	
+			}
+	
+		}).catch( error => {
+
+			console.log(error.message);
+			message.reply(`Something is not right. I don't feel well. I might need a restart. Tell my creator. : ${error.message}`);
+			  
 		});
-		message.reply(`${gptResponse.data.choices[0].text.substring(7)}`);
-		prompt += `${gptResponse.data.choices[0].text}\n`;
+
+
 	})();
 });

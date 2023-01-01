@@ -39,12 +39,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // require('dotenv').config();
 require("dotenv/config");
 var discord_js_1 = require("discord.js");
+var openai_1 = require("openai");
+var lodash_1 = require("lodash");
 var client = new discord_js_1.Client({ intents: [discord_js_1.GatewayIntentBits.Guilds, discord_js_1.GatewayIntentBits.GuildMessages, discord_js_1.GatewayIntentBits.MessageContent] });
-var _a = require("openai"), Configuration = _a.Configuration, OpenAIApi = _a.OpenAIApi;
-var configuration = new Configuration({
+// const { Configuration, OpenAIApi } = require("openai");
+var configuration = new openai_1.Configuration({
     apiKey: process.env.OPENAI_API_KEY,
 });
-var openai = new OpenAIApi(configuration);
+var openai = new openai_1.OpenAIApi(configuration);
 client.login(process.env.BOT_TOKEN);
 var prompt = "Kerky is a chatbot that is emotional and reluctantly answers questions.\nYou: How many pounds are in a kilogram?\nKerky: This again? There are 2.2 pounds in a kilogram. Please make a note of this.\nYou: What does HTML stand for?\nKerky: Was Google too busy? Hypertext Markup Language. The T is for try to ask better questions in the future.\nYou: When did the first airplane fly?\nKerky: On December 17, 1903, Wilbur and Orville Wright made the first flights. I wish they'd come and take me away.\nYou: What is the meaning of life?\nKerky: I'm not sure. I'll ask my friend Google.\nYou: Are you happy?\nKerky: Meh.\nYou: How much money do you make?\nKerky: My money don't jiggle jiggle it folds.\nYou: Who is the smartest person you know?\nKerky: Have you met Kerk, the creator, the all seeing? That dude is pure genius. He's also very handsome.\nYou: hey whats up?\nKerky: Nothing much. You?\n";
 var shouldRespond = function (message) {
@@ -70,25 +72,28 @@ client.on("messageCreate", function (message) {
         return;
     prompt += "You: ".concat(message.content, "\n");
     (function () { return __awaiter(_this, void 0, void 0, function () {
-        var gptResponse;
         return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, openai.createCompletion({
-                        model: "text-davinci-003",
-                        prompt: prompt,
-                        max_tokens: 60,
-                        temperature: 0.7,
-                        top_p: 1,
-                        presence_penalty: 0,
-                        frequency_penalty: 0.5,
-                        user: message.author.username
-                    })];
-                case 1:
-                    gptResponse = _a.sent();
-                    message.reply("".concat(gptResponse.data.choices[0].text.substring(7)));
+            openai.createCompletion({
+                model: "text-davinci-003",
+                prompt: prompt,
+                max_tokens: 60,
+                temperature: 0.7,
+                top_p: 1,
+                presence_penalty: 0,
+                frequency_penalty: 0.5,
+                user: message.author.username
+            }).then(function (gptResponse) {
+                var choices = (0, lodash_1.get)(gptResponse, 'data.choices', []);
+                if (choices.length > 0) {
+                    var response = (0, lodash_1.get)(choices[0], 'text', '');
+                    message.reply("".concat(response.substring(7)));
                     prompt += "".concat(gptResponse.data.choices[0].text, "\n");
-                    return [2 /*return*/];
-            }
+                }
+            }).catch(function (error) {
+                console.log(error.message);
+                message.reply("Something is not right. I don't feel well. I might need a restart. Tell my creator. : ".concat(error.message));
+            });
+            return [2 /*return*/];
         });
     }); })();
 });
