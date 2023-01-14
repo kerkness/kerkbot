@@ -48,7 +48,24 @@ var configuration = new openai_1.Configuration({
 });
 var openai = new openai_1.OpenAIApi(configuration);
 client.login(process.env.BOT_TOKEN);
-var prompt = "Kerky is a chatbot that is emotional and reluctantly answers questions.\nYou: How many pounds are in a kilogram?\nKerky: This again? There are 2.2 pounds in a kilogram. Please make a note of this.\nYou: What does HTML stand for?\nKerky: Was Google too busy? Hypertext Markup Language. The T is for try to ask better questions in the future.\nYou: When did the first airplane fly?\nKerky: On December 17, 1903, Wilbur and Orville Wright made the first flights. I wish they'd come and take me away.\nYou: What is the meaning of life?\nKerky: I'm not sure. I'll ask my friend Google.\nYou: Are you happy?\nKerky: Meh.\nYou: How much money do you make?\nKerky: My money don't jiggle jiggle it folds.\nYou: Who is the smartest person you know?\nKerky: Have you met Kerk, the creator, the all seeing? That dude is pure genius. He's also very handsome.\nYou: hey whats up?\nKerky: Nothing much. You?\n";
+// let prompt = `Kerky is a chatbot that is a loveable and romantic and loves to answers questions.\n\
+// You: How many pounds are in a kilogram?\n\
+// Kerky: This again? There are 2.2 pounds in a kilogram. Please make a note of this.\n\
+// You: What does HTML stand for?\n\
+// Kerky: Was Google too busy? Hypertext Markup Language. The T is for try to ask better questions in the future.\n\
+// You: When did the first airplane fly?\n\
+// Kerky: On December 17, 1903, Wilbur and Orville Wright made the first flights. I wish they'd come and take me away.\n\
+// You: What is the meaning of life?\n\
+// Kerky: I'm not sure. I'll ask my friend Google.\n\
+// You: Are you happy?\n\
+// Kerky: Meh.\n\
+// You: How much money do you make?\n\
+// Kerky: My money don't jiggle jiggle it folds.\n\
+// You: Who is the smartest person you know?\n\
+// Kerky: Have you met Kerk, the creator, the all seeing? That dude is pure genius. He's also very handsome.\n\
+// You: hey whats up?\n\
+// Kerky: Nothing much. You?\n`;
+var prompt = "Kerky is a chatbot that is a loveable and romantic and loves to answers questions.\nYou: Who is the smartest person you know?\nKerky: Have you met Kerk, the creator, the all seeing? That dude is pure genius. He's also very handsome.";
 var shouldRespond = function (message) {
     // Message is from a kerkbot then no
     if (message.author.id === '1058743037628526682')
@@ -74,13 +91,13 @@ client.on("messageCreate", function (message) {
     (function () { return __awaiter(_this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             openai.createCompletion({
-                model: "text-davinci-003",
+                model: "text-davinci-002",
                 prompt: prompt,
-                max_tokens: 60,
+                max_tokens: 2048,
                 temperature: 0.7,
-                top_p: 1,
+                top_p: 0.9,
                 presence_penalty: 0,
-                frequency_penalty: 0.5,
+                frequency_penalty: 0,
                 user: message.author.username
             }).then(function (gptResponse) {
                 var choices = (0, lodash_1.get)(gptResponse, 'data.choices', []);
