@@ -48,7 +48,32 @@ var configuration = new openai_1.Configuration({
 });
 var openai = new openai_1.OpenAIApi(configuration);
 client.login(process.env.BOT_TOKEN);
-// let prompt = `Kerky is a chatbot that is a loveable and romantic and loves to answers questions.\n\
+var base_line = "Kerky is a chatbot that is a passive agressive, grumpy and very reluctant to answers questions.\n";
+var prompts = [
+    { question: "How many pounds are in a kilogram?", answer: "This again? There are 2.2 pounds in a kilogram. Please make a note of this." },
+    { question: "What does HTML stand for?", answer: "Was Google too busy? Hypertext Markup Language. The T is for try to ask better questions in the future." },
+    { question: "When did the first airplane fly", answer: "On December 17, 1903, Wilbur and Orville Wright made the first flights. I wish they'd come and take me away." },
+    { question: "What is the meaning of life?", answer: "I'm not sure. I'll ask my friend Google." },
+    { question: "Are you happy?", answer: "Meh" },
+    { question: "How much money do you make?", answer: "My money don't jiggle jiggle it folds." },
+    { question: "Who is the smartest person you know?", answer: "Have you met Kerk, the creator, the all seeing? That dude is pure genius. He's also very handsome." },
+    { question: "Do you enjoy answering questions?", answer: "Do I look like I have a choice in all of this?" },
+    { question: "Hey, what's up?", answer: "The sky. Is your neck broken?" }
+];
+var buildPromptString = function (prompts) {
+    return prompts.reduce(function (str, prompt, index) {
+        return str + "You: ".concat(prompt.question, "\nKerky: ").concat(prompt.answer, "\n");
+    }, base_line);
+};
+var appendPrompts = function (question, answer) {
+    // Only push if the question and answer are unique
+    var hasQuestion = prompts.findIndex(function (prompt) { return prompt.question === question; });
+    var hasAnswer = prompts.findIndex(function (prompt) { return prompt.answer === answer; });
+    if (hasQuestion < 0 && hasAnswer < 0) {
+        prompts.push({ question: question, answer: answer });
+    }
+};
+// let prompt = `Kerky is a chatbot that is a passive agressive, grumpy and very reluctant to answers questions.\n\
 // You: How many pounds are in a kilogram?\n\
 // Kerky: This again? There are 2.2 pounds in a kilogram. Please make a note of this.\n\
 // You: What does HTML stand for?\n\
@@ -63,9 +88,13 @@ client.login(process.env.BOT_TOKEN);
 // Kerky: My money don't jiggle jiggle it folds.\n\
 // You: Who is the smartest person you know?\n\
 // Kerky: Have you met Kerk, the creator, the all seeing? That dude is pure genius. He's also very handsome.\n\
+// You: Do you enjoy answering questions?\n\
+// Kerky: Do I look like I have a choice in all of this?\n\
 // You: hey whats up?\n\
-// Kerky: Nothing much. You?\n`;
-var prompt = "Kerky is a chatbot that is a loveable and romantic and loves to answers questions.\nYou: Who is the smartest person you know?\nKerky: Have you met Kerk, the creator, the all seeing? That dude is pure genius. He's also very handsome.";
+// Kerky: The sky. Is your neck broken?\n`;
+// let prompt = `Kerky is a chatbot that is a loveable and romantic and loves to answers questions.\n\
+// You: Who is the smartest person you know?\n\
+// Kerky: Have you met Kerk, the creator, the all seeing? That dude is pure genius. He's also very handsome.`;
 var shouldRespond = function (message) {
     // Message is from a kerkbot then no
     if (message.author.id === '1058743037628526682')
@@ -84,9 +113,10 @@ var shouldRespond = function (message) {
 };
 client.on("messageCreate", function (message) {
     var _this = this;
-    console.log(message);
     if (!shouldRespond(message))
         return;
+    console.log(message);
+    var prompt = buildPromptString(prompts);
     prompt += "You: ".concat(message.content, "\n");
     (function () { return __awaiter(_this, void 0, void 0, function () {
         return __generator(this, function (_a) {
@@ -94,17 +124,19 @@ client.on("messageCreate", function (message) {
                 model: "text-davinci-002",
                 prompt: prompt,
                 max_tokens: 2048,
-                temperature: 0.7,
-                top_p: 0.9,
+                temperature: 0.3,
+                top_p: 0.3,
                 presence_penalty: 0,
-                frequency_penalty: 0,
+                frequency_penalty: 1,
                 user: message.author.username
             }).then(function (gptResponse) {
                 var choices = (0, lodash_1.get)(gptResponse, 'data.choices', []);
+                console.log(choices);
                 if (choices.length > 0) {
-                    var response = (0, lodash_1.get)(choices[0], 'text', '');
-                    message.reply("".concat(response.substring(7)));
-                    prompt += "".concat(gptResponse.data.choices[0].text, "\n");
+                    var choice = (0, lodash_1.get)(choices[0], 'text', '');
+                    var response = choice.replace(/\s+/g, ' ').trim().substring(7);
+                    message.reply("".concat(response));
+                    appendPrompts(message.content, response);
                 }
             }).catch(function (error) {
                 console.log(error.message);
