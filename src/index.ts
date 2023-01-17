@@ -70,6 +70,8 @@ const shouldRespondDirectMessage = (message: Message) => {
 		return false;
 	};
 
+	if(message.author.id === process.env.COMPANION_BOT_ID) companion_message_count++;
+
 	// Return true
 	return true;
 }
