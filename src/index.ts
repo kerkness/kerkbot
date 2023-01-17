@@ -10,10 +10,11 @@ interface PromptParams {
 	answer: string;
 }
 
+let companion_message_count=0;
 const author_id = process.env.BOT_AUTHOR_ID;
 const channel_id = process.env.BOT_CHANNEL_ID;
-const bot_name = process.env.BOT_NAME;
-const bot_nickname = process.env.BOT_NICKNAME;
+const bot_name = process.env.BOT_NAME || 'Kerky';
+const bot_nickname = process.env.BOT_NICKNAME || 'Kerkbot';
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
 const configuration = new Configuration({
@@ -37,7 +38,7 @@ const appendPrompts = (question: string, answer: string) => {
 	// Only push if the question and answer are unique
 	const hasQuestion = prompts.findIndex(prompt => prompt.question === question);
 	const hasAnswer = prompts.findIndex(prompt => prompt.answer === answer);
-	if (hasQuestion < 0 && hasAnswer < 0) {
+	if (hasQuestion < 0 || hasAnswer < 0) {
 		prompts.push({ question, answer })
 	}
 }
@@ -49,10 +50,10 @@ const shouldRespond = (message: Message) => {
 	if (message.author.id === author_id) return false;
 
 	// If message mentions kerkbot then yes
-	if (message.mentions.users.findKey((value, key) => key === author_id)) return true;
+	if (message.mentions.users.findKey((value, key) => key === author_id)) return shouldRespondDirectMessage(message);
 
 	// If message includes the words  Kerky or Kerkbot
-	if (message.content.toLowerCase().includes(`${bot_nickname}`) || message.content.toLowerCase().includes(`${bot_name}`)) return true;
+	if (message.content.toLowerCase().includes(`${bot_nickname}`) || message.content.toLowerCase().includes(`${bot_name}`)) return shouldRespondDirectMessage(message);
 
 	// If message is in the kerkbot channel
 	if (message.channelId === channel_id) return true;
@@ -61,12 +62,24 @@ const shouldRespond = (message: Message) => {
 	return false;
 }
 
+const shouldRespondDirectMessage = (message: Message) => {
+	
+	// If companion message count is greater than 10 then no
+	if (message.author.id === process.env.COMPANION_BOT_ID && companion_message_count > 10) {
+		companion_message_count = 0;
+		return false;
+	};
+
+	// Return true
+	return true;
+}
+
 client.on("messageCreate", function (message: Message) {
 
+	console.log(message);
 
 	if (!shouldRespond(message)) return;
 
-	console.log(message);
 
 	let prompt = buildPromptString(prompts);
 	prompt += `You: ${message.content}\n`;
@@ -90,7 +103,7 @@ client.on("messageCreate", function (message: Message) {
 
 			if (choices.length > 0) {
 				const choice = get(choices[0], 'text', '');
-				const response = choice.replace(/\s+/g, ' ').trim().substring(7);
+				const response = choice.replace(/\s+/g, ' ').trim().substring(bot_nickname.length + 1);
 				message.reply(`${response}`);
 				appendPrompts(message.content, response);
 			}
