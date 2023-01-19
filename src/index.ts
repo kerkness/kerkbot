@@ -106,7 +106,7 @@ client.on("messageCreate", function (message: Message) {
 			if (choices.length > 0) {
 				const choice = get(choices[0], 'text', '');
 				const response = choice.replace(/\s+/g, ' ').trim().substring(bot_nickname.length + 1);
-				message.reply(`${companion_message_count} ${response}`);
+				message.reply(`${response}`);
 				appendPrompts(message.content, response);
 			}
 
