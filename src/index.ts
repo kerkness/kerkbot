@@ -64,13 +64,13 @@ const shouldRespond = (message: Message) => {
 
 const shouldRespondDirectMessage = (message: Message) => {
 	
+	if(message.author.id === process.env.COMPANION_BOT_ID) companion_message_count++;
+
 	// If companion message count is greater than 10 then no
 	if (message.author.id === process.env.COMPANION_BOT_ID && companion_message_count > 10) {
 		companion_message_count = 0;
 		return false;
 	};
-
-	if(message.author.id === process.env.COMPANION_BOT_ID) companion_message_count++;
 
 	// Return true
 	return true;
@@ -106,7 +106,7 @@ client.on("messageCreate", function (message: Message) {
 			if (choices.length > 0) {
 				const choice = get(choices[0], 'text', '');
 				const response = choice.replace(/\s+/g, ' ').trim().substring(bot_nickname.length + 1);
-				message.reply(`${response}`);
+				message.reply(`${companion_message_count} ${response}`);
 				appendPrompts(message.content, response);
 			}
 
